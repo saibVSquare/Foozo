@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
  * @OA\Get(
  *     path="/api/home",
  *     operationId="index",
- *     tags={"Home"},Home
+ *     tags={"Home"},
  *     summary="Get list of users",
  *     @OA\Response(
  *         response=200,
@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
  */
 class HomeController extends Controller
 {
+
     public function index()
     {
         return response()->json([

@@ -8,7 +8,7 @@ use Illuminate\Routing\Controller as BaseController;
 
 /**
  * @OA\Info(
- *    title="APIs For Thrift Store",
+ *    title="APIs For Foozo Project",
  *    version="1.0.0",
  * ),
  *   @OA\SecurityScheme(
