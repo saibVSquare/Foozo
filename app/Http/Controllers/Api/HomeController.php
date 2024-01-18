@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
  * @OA\Get(
  *     path="/api/home",
  *     operationId="index",
- *     tags={"Home"},
  *     summary="Get list of users",
  *     @OA\Response(
  *         response=200,

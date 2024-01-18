@@ -1,7 +1,7 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Foozo Project API",
+        "title": "APIs For Foozo Project",
         "version": "1.0.0"
     },
     "servers": [
@@ -12,9 +12,6 @@
     "paths": {
         "/api/home": {
             "get": {
-                "tags": [
-                    "Home"
-                ],
                 "summary": "Get list of users",
                 "operationId": "index",
                 "responses": {
@@ -26,6 +23,38 @@
         }
     },
     "components": {
+        "responses": {
+            "200": {
+                "description": "Logout"
+            },
+            "400": {
+                "description": "Bad request"
+            },
+            "404": {
+                "description": "Resource Not Found"
+            }
+        },
+        "requestBodies": {
+            "login": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "example": "admin@example.com"
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "example": "123456"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
