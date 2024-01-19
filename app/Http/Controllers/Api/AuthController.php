@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Base\BaseModel;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
-
 
 
 class AuthController extends Controller
@@ -33,9 +33,11 @@ class AuthController extends Controller
      */
 
     protected $users, $logedIn_user;
-    public function __construct()
+    protected $user_model;
+    public function __construct(User $user)
     {
         $this->users = new User();
+        $this->user_model = new BaseModel($user);
     }
 
 
@@ -110,9 +112,8 @@ class AuthController extends Controller
                 $data['password'] = bcrypt($request->password);
             }
 
-            $user = $this->users->create($data);
+            $user = $this->user_model->create($data);
             DB::commit();
-
 
             return response()->json([
                 'status' => 'success',
@@ -135,56 +136,76 @@ class AuthController extends Controller
         ]);
 
         if (Hash::check($request->get('current_password'), auth()->user()->password)) {
-
-            auth()->user()->update([
+            $result = $this->user_model->update([
                 'password' => bcrypt($request->get('new_password'))
-            ]);
-            return response()->json([
-                'success' => true,
-                'message' => 'Change password successful.'
-            ]);
+            ], auth()->user()->id);
+
+            if ($result) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Change password successful.'
+                ]);
+            } else {
+                throw new \Exception('Email is not correct');
+            }
         }
         throw new \Exception('Incorrect current password');
     }
 
     public function forgetPassword(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email'
-        ]);
-        $check_already_exist = $this->users->where('email', $request->get('email'))->first();
-        if ($check_already_exist) {
+        try {
+            $request->validate([
+                'email' => 'required|email'
+            ]);
+
             $randomNumber = random_int(1000, 9999);
-            $check_already_exist->update([
-                'verification_code' => $randomNumber
-            ]);
-            return response()->json([
-                'success' => true,
-                'message' => 'Check you email and update you password'
-            ]);
+            $result = $this->user_model->updateWhere(
+                ['email' => $request->get('email')],
+                ['verification_code' => $randomNumber]
+            );
+
+            if ($result) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Check you email and update you password'
+                ]);
+            } else {
+                throw new \Exception('Email is not correct');
+            }
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
         }
-        throw new \Exception('User is not exist');
     }
 
 
     public function resetPassword(Request $request)
     {
-        $request->validate([
-            'code' => 'required',
-            'password' => 'required',
-            'confirm_password' => 'required|same:password',
-        ]);
+        try {
+            $request->validate([
+                'code' => 'required',
+                'password' => 'required',
+                'confirm_password' => 'required|same:password',
+            ]);
 
-        $code = (int) auth()->user()->verification_code;
-        if ($code == (int) $request->get('code')) {
-            auth()->user()->update([
-                'password' => bcrypt($request->get('password'))
-            ]);
-            return response()->json([
-                'success' => true,
-                'message' => 'Reset Password Done Successfully'
-            ]);
+            $code = (int) auth()->user()->verification_code;
+            if ($code == (int) $request->get('code')) {
+                $result = $this->user_model->update([
+                    'password' => bcrypt($request->get('password'))
+                ], auth()->user()->id);
+
+                if ($result) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Reset Password Done Successfully'
+                    ]);
+                } else {
+                    throw new \Exception('user is not exist');
+                }
+            }
+
+        } catch (\Exception $e) {
+            throw new \Exception('Verification code is not correct');
         }
-        throw new \Exception('Verification code is not correct');
     }
 }
