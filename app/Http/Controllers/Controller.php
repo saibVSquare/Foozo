@@ -8,21 +8,12 @@ use Illuminate\Routing\Controller as BaseController;
 
 /**
  * @OA\Info(
- *    title="APIs For Foozo Project",
+ *    title="Foozo Project API",
+ *    description="An API of cool stuffs",
  *    version="1.0.0",
- * ),
- *   @OA\SecurityScheme(
- *       securityScheme="bearerAuth",
- *       in="header",
- *       name="bearerAuth",
- *       type="http",
- *       scheme="bearer",
- *       bearerFormat="JWT",
- *    ),
+ * )
  */
 
-
- 
 
 class Controller extends BaseController
 {

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('country_name')->nullable();
             $table->string('phone')->nullable();
             $table->tinyInteger('is_active')->default(1)->nullable();
+            $table->tinyInteger('is_verified')->default(1)->nullable();
             $table->string('verification_code')->nullable();
             $table->enum('newsletter_frequency', ['never','daily','weekly','monthly','quaterly','yearly'])->default('never');
             $table->enum('lunch_reminder_frequency', ['never','daily','weekly','monthly','quaterly','yearly'])->default('never');
