@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,29 +34,33 @@ Route::middleware('auth')->group(function () {
 Route::get('payment', [ProductController::class, 'show'])->name('payment');
 Route::post('/process-payment', [ProductController::class, 'processPayment'])->name('payment.process');
 
+Route::get('plan-create',[SubscriptionController::class,'planCreate'])->name('plan.create');
+Route::post('plan-store',[SubscriptionController::class,'planStore'])->name('plan.store');
+
+
 Route::get('/', function () {
     return view('welcome');
 });
 
 
-Route::get('command', function () {
-    Artisan::call('clear:all');
-    dd("Done");
-});
+// Route::get('command', function () {
+//     Artisan::call('clear:all');
+//     dd("Done");
+// });
 
-Route::get('migrate', function () {
-    Artisan::call('migrate');
-    dd("Done");
-});
+// Route::get('migrate', function () {
+//     Artisan::call('migrate');
+//     dd("Done");
+// });
 
-Route::get('migrate-fresh', function () {
-    Artisan::call('migrate:refresh');
-    dd("Done");
-});
+// Route::get('migrate-fresh', function () {
+//     Artisan::call('migrate:refresh');
+//     dd("Done");
+// });
 
-Route::get('db-seed', function () {
-    Artisan::call('db:seed');
-    dd("Done");
-});
+// Route::get('db-seed', function () {
+//     Artisan::call('db:seed');
+//     dd("Done");
+// });
 
 require __DIR__ . '/auth.php';

@@ -22,18 +22,8 @@ class ProductController extends Controller
         $user = Auth::user();
         $paymentMethod = $request->input('payment_method');
         $user->createOrGetStripeCustomer();
-        
-        // $user->updateDefaultPaymentMethod($paymentMethod);
-        // dd($test);
-        // $setupIntent = $user->setupIntent();
-        // $paymentIntent = $user->confirmPaymentIntent($setupIntent->id);
-        $paymentIntent = $user->charge(100, $paymentMethod, [
-            'automatic_payment_methods' => [
-                'enabled' => true,
-                'allow_redirects' => 'never',
-            ]
-        ]);
-        // Handle successful payment
+        $paymentMethod = $user->addPaymentMethod($paymentMethod);
+        $user->charge(200, $paymentMethod->id);
         return redirect()->route('payment')->with('success', 'Payment successful!');
     }
 
