@@ -32,32 +32,66 @@
 <body>
     <div>
         <h1>Make a One-Time Payment</h1>
-
-        <form action="{{route('payment.process')}}" method="post" id="payment-form">
-            @csrf
-            <div id="card-element" style="width: 400px;">
-                <!-- A Stripe Element will be inserted here. -->
+        <form action="{{ route('payment.process') }}" method="POST" id="subscribe-form">
+            <div class="form-group">
+                <label for="">Amount</label>
+                <input type="number" name="amount" id="amount" class="form-control"> <br>
             </div>
-            <!-- Used to display form errors. -->
-            <div id="card-errors" role="alert"></div>
-            <button type="submit" style="margin-top:10px">Submit Payment</button>
+
+            <div class="form-group">
+                <label for="card-holder-name form-control">Card Holder Name</label> <br>
+                <input id="card-holder-name" type="text" class="form-control">
+            </div>
+
+            @csrf
+            <div class="form-row">
+                <label for="card-element">Credit or debit card</label>
+                <div id="card-element" class="form-control" style="width:500px">
+                </div>
+                <!-- Used to display form errors. -->
+                <div id="card-errors" role="alert"></div>
+            </div>
+            <div class="stripe-errors"></div>
+            @if (count($errors) > 0)
+            <div class="alert alert-danger">
+                @foreach ($errors->all() as $error)
+                {{ $error }}<br>
+                @endforeach
+            </div>
+            @endif
+            <div class="form-group text-center">
+                <button id="card-button" data-secret="{{ $paymentIntent->client_secret }}"
+                    class="btn btn-lg btn-success btn-block">SUBMIT</button>
+            </div>
         </form>
+
     </div>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
 
     <script>
-        // Set your Stripe public key
-        var stripe = Stripe('{{ $stripePublicKey }}');
-        // Create an instance of Elements
+        var stripe = Stripe('{{ env('STRIPE_KEY') }}');
         var elements = stripe.elements();
-        // Create an instance of the card Element
-        var card = elements.create('card');
-
-        // Add an instance of the card Element into the `card-element` div
+        var style = {
+            base: {
+                color: '#32325d',
+                fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                fontSmoothing: 'antialiased',
+                fontSize: '16px',
+                '::placeholder': {
+                    color: '#aab7c4'
+                }
+            },
+            invalid: {
+                color: '#fa755a',
+                iconColor: '#fa755a'
+            }
+        };
+        var card = elements.create('card', {
+            hidePostalCode: true,
+            style: style
+        });
         card.mount('#card-element');
-
-        // Handle real-time validation errors from the card Element
         card.addEventListener('change', function (event) {
             var displayError = document.getElementById('card-errors');
             if (event.error) {
@@ -66,50 +100,36 @@
                 displayError.textContent = '';
             }
         });
-
-        // Handle form submission
-        var form = document.getElementById('payment-form');
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            // Disable the submit button to prevent repeated clicks
-            document.querySelector('button').disabled = true;
-
-            var returnUrl = 'https://your-website.com/checkout/success'; // Replace with your actual success URL
-            // Create payment method
-            stripe.createPaymentMethod({
-                type: 'card',
-                card: card,
-            }).then(function (result) {
-                if (result.error) {
-                    // Inform the user if there was an error
-                    var errorElement = document.getElementById('card-errors');
-                    errorElement.textContent = result.error.message;
-
-                    // Enable the submit button
-                    document.querySelector('button').disabled = false;
-                } else {
-                    // Tokenize the payment method ID
-                    var paymentMethodId = result.paymentMethod.id;
-                    // Add the payment method ID to the form
-                    var hiddenInput = document.createElement('input');
-                    hiddenInput.setAttribute('type', 'hidden');
-                    hiddenInput.setAttribute('name', 'payment_method');
-                    hiddenInput.setAttribute('value', paymentMethodId);
-                    form.appendChild(hiddenInput);
-
-                    // Add the return_url to the form
-                    var returnUrlInput = document.createElement('input');
-                    returnUrlInput.setAttribute('type', 'hidden');
-                    returnUrlInput.setAttribute('name', 'return_url');
-                    returnUrlInput.setAttribute('value', 'http://127.0.0.1:8000/payment'); // Replace with your actual return URL
-                    form.appendChild(returnUrlInput);
-
-                    // Submit the form
-                    form.submit();
+        const cardHolderName = document.getElementById('card-holder-name');
+        const cardButton = document.getElementById('card-button');
+        const clientSecret = cardButton.dataset.secret;
+        cardButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+            console.log("attempting");
+            const { setupIntent, error } = await stripe.confirmCardSetup(
+                clientSecret, {
+                payment_method: {
+                    card: card,
+                    billing_details: { name: cardHolderName.value }
                 }
-            });
+            }
+            );
+            if (error) {
+                var errorElement = document.getElementById('card-errors');
+                errorElement.textContent = error.message;
+            } else {
+                paymentMethodHandler(setupIntent.payment_method);
+            }
         });
+        function paymentMethodHandler(payment_method) {
+            var form = document.getElementById('subscribe-form');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'payment_method');
+            hiddenInput.setAttribute('value', payment_method);
+            form.appendChild(hiddenInput);
+            form.submit();
+        }
     </script>
 </body>
 
