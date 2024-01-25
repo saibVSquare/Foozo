@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->tinyInteger('is_active')->default(1)->nullable();
             $table->tinyInteger('is_verified')->default(1)->nullable();
             $table->enum('role', ['admin', 'supplier', 'company', 'driver'])->default('admin');
-            $table->enum('status', ['actve', 'suspend', 'pending'])->default('pending');
+            $table->enum('status', ['active', 'suspend', 'pending'])->default('pending');
             $table->timestamps();
         });
     }

@@ -21,8 +21,10 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
+    dd(auth()->guard('web'));
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -33,21 +35,12 @@ Route::middleware('auth')->group(function () {
 
 Route::get('payment', [ProductController::class, 'show'])->name('payment');
 Route::post('/process-payment', [ProductController::class, 'processPayment'])->name('payment.process');
-
-Route::get('plan-create',[SubscriptionController::class,'planCreate'])->name('plan.create');
-Route::post('plan-store',[SubscriptionController::class,'planStore'])->name('plan.store');
-Route::get('plans',[SubscriptionController::class,'plans'])->name('plans');
-Route::get('plan-checkout/{id}',[SubscriptionController::class,'plansCheckout'])->name('plan.checkout');
-Route::post('plan-process',[SubscriptionController::class,'planProcess'])->name('plan.process');
-Route::get('subscriptions',[SubscriptionController::class,'subscription'])->name('subscriptions');
-
-
-
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
+Route::get('plan-create', [SubscriptionController::class, 'planCreate'])->name('plan.create');
+Route::post('plan-store', [SubscriptionController::class, 'planStore'])->name('plan.store');
+Route::get('plans', [SubscriptionController::class, 'plans'])->name('plans');
+Route::get('plan-checkout/{id}', [SubscriptionController::class, 'plansCheckout'])->name('plan.checkout');
+Route::post('plan-process', [SubscriptionController::class, 'planProcess'])->name('plan.process');
+Route::get('subscriptions', [SubscriptionController::class, 'subscription'])->name('subscriptions');
 
 // Route::get('command', function () {
 //     Artisan::call('clear:all');

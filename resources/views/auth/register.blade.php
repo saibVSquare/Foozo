@@ -16,6 +16,16 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+         <!-- Email Address -->
+         <div class="mt-4">
+            <select name="type" id="" class="block mt-1 w-full">
+                <option disabled selected>Choose Type</option>
+                <option value="admin">Admin</option>
+                <option value="supplier">Supplier</option>
+                <option value="driver">Driver</option>
+            </select>
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
