@@ -36,6 +36,12 @@ Route::post('/process-payment', [ProductController::class, 'processPayment'])->n
 
 Route::get('plan-create',[SubscriptionController::class,'planCreate'])->name('plan.create');
 Route::post('plan-store',[SubscriptionController::class,'planStore'])->name('plan.store');
+Route::get('plans',[SubscriptionController::class,'plans'])->name('plans');
+Route::get('plan-checkout/{id}',[SubscriptionController::class,'plansCheckout'])->name('plan.checkout');
+Route::post('plan-process',[SubscriptionController::class,'planProcess'])->name('plan.process');
+Route::get('subscriptions',[SubscriptionController::class,'subscription'])->name('subscriptions');
+
+
 
 
 Route::get('/', function () {
