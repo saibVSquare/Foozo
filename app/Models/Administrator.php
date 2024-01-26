@@ -23,4 +23,29 @@ class Administrator extends Model implements Authenticatable
         'role',
         'status'
     ];
+
+    public function isAdmin()
+    {
+        return $this->role == "admin";
+    }
+
+    public function isDriver()
+    {
+        return $this->role == "driver";
+    }
+
+    public function isSupplier()
+    {
+        return $this->role == "supplier";
+    }
+
+    public function isVerified()
+    {
+        return $this->is_verified;
+    }
+
+    public function isActive()
+    {
+        return $this->is_active;
+    }
 }

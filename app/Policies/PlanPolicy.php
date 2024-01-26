@@ -12,7 +12,7 @@ class PlanPolicy
      */
     public function __construct()
     {
-        
+
     }
 
     public function update(User $user, Plan $plan)
